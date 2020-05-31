@@ -15,7 +15,7 @@ for f in files:
 from sort import *
 tracker = Sort()
 memory = {}
-line1 = [(500,350), (800, 400)]
+line1 = [(800,650), (1450, 850)]
 counter = [0,0,0,0]
 
 list_of_vehicles = ["light","heavy","bike","person"]
@@ -162,9 +162,6 @@ while True:
     # apply non-maxima suppression to suppress weak, overlapping
     # bounding boxes
     idxs = cv2.dnn.NMSBoxes(boxes, confidences, args["confidence"], args["threshold"])
-    #print("idxs", idxs)
-    #print("boxes", boxes[i][0])
-    #print("boxes", boxes[i][1])
     
     dets = []
     if len(idxs) > 0:
@@ -173,8 +170,6 @@ while True:
             (x, y) = (boxes[i][0], boxes[i][1])
             (w, h) = (boxes[i][2], boxes[i][3])
             dets.append([x, y, x+w, y+h, confidences[i]])
-            #print(confidences[i])
-            #print(center[i])
     np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
     dets = np.asarray(dets)
     tracks = tracker.update(dets)
@@ -184,8 +179,6 @@ while True:
     c = []
     
     previous = memory.copy()
-    #print("centerx",centerX)
-    #  print("centery",centerY)
     memory = {}
 
     for track in tracks:
@@ -199,10 +192,6 @@ while True:
             # extract the bounding box coordinates
             (x, y) = (int(box[0]), int(box[1]))
             (w, h) = (int(box[2]), int(box[3]))
-
-            # draw a bounding box rectangle and label on the image
-            # color = [int(c) for c in COLORS[classIDs[i]]]
-            # cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
 
             color = [int(c) for c in COLORS[indexIDs[i] % len(COLORS)]]
             cv2.rectangle(frame, (x, y), (w, h), color, 2)
@@ -236,9 +225,6 @@ while True:
     counter_text = "counterPerson:{}".format(counter[3])
     cv2.putText(frame, counter_text, (100,220), cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 0, 255), 2)
 
-    # saves image file
-    #+cv2.imwrite("output/frame-{}.png".format(frameIndex), frame)
-
     # check if the video writer is None
     if writer is None:
         # initialize our video writer
@@ -258,12 +244,6 @@ while True:
 
     # increase frame index
     frameIndex += 1
-
-    #if frameIndex >= 4000: # limits the execution to the first 4000 frames
-    #    print("[INFO] cleaning up...")
-    #    writer.release()
-    #    vs.release()
-    #    exit()
 
 # release the file pointers
 print("[INFO] cleaning up...")
